@@ -78,6 +78,16 @@ npm run dev
 ```
 *SOC Dashboard is hosted on: `http://localhost:5173`*
 
+### 5. Frontend Production & Vercel Deployment
+- Run the production compiler: `npm run build` in the `frontend` folder.
+- Deploy the compiled static HTML/JS build on an **NGINX web server** or an **S3 + CloudFront CDN** for high availability.
+
+#### Deploying Frontend on Vercel:
+1. Connect your GitHub repository to your **Vercel Dashboard**.
+2. In the project setup, set the **Root Directory** to `frontend`.
+3. Vercel will automatically detect the Vite config. Leave build commands as default (`npm run build`, output directory `dist`).
+4. Click **Deploy**. The `vercel.json` file inside the `frontend` directory handles single-page routing redirects automatically.
+
 ---
 
 ## 🛡️ Validation & Operational Flow
