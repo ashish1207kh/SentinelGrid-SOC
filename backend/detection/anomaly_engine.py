@@ -82,13 +82,12 @@ def extract_features_and_explanations(df, profiles):
         reasons     = []
 
         if username not in profiles:
-            # Brand-new user never seen before — treat everything as suspicious
             geo_dev    = 1
             hour_dev   = 12
             server_dev = 1
             data_dev   = data_mb
             priv_dev   = 1 if event_type == "privilege_change" else 0
-            reasons.append(f"Unknown user profile: {username}")
+            reasons.append(f"Suspicious activity: Unknown/unregistered user profile '{username}' accessing network assets.")
         else:
             prof = profiles[username]
 
@@ -96,7 +95,8 @@ def extract_features_and_explanations(df, profiles):
             if country not in prof["geos"]:
                 geo_dev = 1
                 reasons.append(
-                    f"Anomalous Location: {country} (expected {', '.join(prof['geos'])})"
+                    f"Anomalous Location: Ingress connection originated from {country} "
+                    f"(deviates from user's normal baseline location of {', '.join(prof['geos'])})."
                 )
             else:
                 geo_dev = 0
@@ -106,8 +106,8 @@ def extract_features_and_explanations(df, profiles):
             if h_dist > 0:
                 hour_dev = h_dist
                 reasons.append(
-                    f"Anomalous Access Time: {hour:02d}:00 "
-                    f"(expected {prof['min_hour']:02d}:00 – {prof['max_hour']:02d}:00)"
+                    f"Anomalous Access Time: Session initiated at {hour:02d}:00 "
+                    f"(deviates from user's typical active hour baseline of {prof['min_hour']:02d}:00 – {prof['max_hour']:02d}:00)."
                 )
             else:
                 hour_dev = 0
@@ -116,8 +116,9 @@ def extract_features_and_explanations(df, profiles):
             if server not in prof["servers"]:
                 server_dev = 1
                 reasons.append(
-                    f"Anomalous Host Access: {server} "
-                    f"(normal: {', '.join(prof['servers'])})"
+                    f"Anomalous Host Connection: Connected to '{server}' "
+                    f"(deviates from user's regular server baseline of {', '.join(prof['servers'])}). "
+                    f"This server has not been accessed by this user profile in the baseline history."
                 )
             else:
                 server_dev = 0
@@ -125,9 +126,11 @@ def extract_features_and_explanations(df, profiles):
             # --- Data volume check ---
             if data_mb > prof["max_data"] * 3.0:
                 data_dev = max(0.0, data_mb - prof["max_data"])
+                multiple = round(data_mb / max(1.0, prof["max_data"]), 1)
                 reasons.append(
-                    f"Anomalous data payload: {data_mb} MB "
-                    f"(user baseline max: {round(prof['max_data'], 1)} MB)"
+                    f"Anomalous Data Volume: Transferred {data_mb} MB of data to '{server}' "
+                    f"(user's typical max baseline is {round(prof['max_data'], 1)} MB). "
+                    f"This represents an extreme {multiple}x baseline surge."
                 )
             else:
                 data_dev = 0.0
@@ -135,7 +138,10 @@ def extract_features_and_explanations(df, profiles):
             # --- Privilege change check ---
             if event_type == "privilege_change":
                 priv_dev = 1
-                reasons.append("Account privilege modification detected")
+                reasons.append(
+                    f"Privilege Escalation: Standard account privilege was elevated to '{row['privilege_level']}' "
+                    f"with no change authorization ticket on file."
+                )
             else:
                 priv_dev = 0
 

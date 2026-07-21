@@ -53,6 +53,6 @@
     "privilege_level": "admin",
     "status": "success",
     "stage": 4,
-    "description": "Stage 4: Exfiltration of 4.5GB of data to external IP"
+    "description": "Stage 4: Exfiltration of 4.5 GB to external IP"
   }
 ]
