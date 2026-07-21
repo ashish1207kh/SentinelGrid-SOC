@@ -108,8 +108,11 @@ def create_guide_pdf():
     )
     pdf.multi_cell(0, 5, collector_text)
     
-    pdf.output("E:/cyber-resilience/REALTIME_DATA_INGESTION_GUIDE.pdf")
-    print("PDF Ingestion Guide generated at E:/cyber-resilience/REALTIME_DATA_INGESTION_GUIDE.pdf")
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_dir = os.path.dirname(script_dir)
+    pdf_path = os.path.join(parent_dir, "REALTIME_DATA_INGESTION_GUIDE.pdf")
+    pdf.output(pdf_path)
+    print(f"PDF Ingestion Guide generated at {pdf_path}")
 
 if __name__ == "__main__":
     create_guide_pdf()

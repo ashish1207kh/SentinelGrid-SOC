@@ -3,7 +3,7 @@ import urllib.parse
 import json
 import time
 
-API_BASE = "http://localhost:8000/api"
+API_BASE = "http://127.0.0.1:8000/api"
 
 def make_request(url, method="GET", data=None):
     req = urllib.request.Request(url, method=method)

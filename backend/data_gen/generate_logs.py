@@ -144,4 +144,4 @@ with open(OUTPUT_FILE, mode="w", newline="") as f:
                     ])
                     event_count += 1
 
-print(f"Generated {event_count} normal events → {OUTPUT_FILE}")
+print(f"Generated {event_count} normal events -> {OUTPUT_FILE}")

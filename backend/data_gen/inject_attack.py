@@ -115,10 +115,10 @@ with open(FULL_LOGS, mode="w", newline="") as f:
     for row in all_events:
         writer.writerow(row)
 
-print(f"Wrote {len(all_events)} events → {FULL_LOGS}")
+print(f"Wrote {len(all_events)} events -> {FULL_LOGS}")
 
 # Save ground truth (includes stage/description metadata for evaluation)
 with open(GROUND_TRUTH, mode="w") as f:
     json.dump(attack_events, f, indent=2)
 
-print(f"Ground truth saved → {GROUND_TRUTH}")
+print(f"Ground truth saved -> {GROUND_TRUTH}")

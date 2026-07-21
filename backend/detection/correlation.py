@@ -66,7 +66,7 @@ def correlate_alerts():
     with open(OUTPUT_CAMPAIGNS, "w") as f:
         json.dump(campaigns, f, default=str, indent=2)
 
-    print(f"Correlated alerts into {len(campaigns)} campaigns → {OUTPUT_CAMPAIGNS}")
+    print(f"Correlated alerts into {len(campaigns)} campaigns -> {OUTPUT_CAMPAIGNS}")
     return campaigns
 
 

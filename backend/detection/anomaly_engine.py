@@ -190,7 +190,7 @@ def main():
     print(f"Total alerts flagged  : {alert_count}")
     print(f"dr_sharma attack alerts: {sharma_alerts} / 4 (recall)")
     print(f"False positives       : {fp_count}")
-    print(f"Alerts saved → {OUTPUT_ALERTS}")
+    print(f"Alerts saved -> {OUTPUT_ALERTS}")
 
 
 if __name__ == "__main__":
