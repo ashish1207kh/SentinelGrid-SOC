@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 
-const API_BASE = "http://127.0.0.1:8000/api";
+// Relative path — Vite's dev server proxy (see vite.config.js) forwards
+// anything under /api to http://127.0.0.1:8000, so the browser only ever
+// talks to its own origin and CORS never enters the picture in dev.
+// In production, put the same backend behind the same origin/reverse proxy
+// (or set this back to an absolute URL with CORS enabled on the backend).
+const API_BASE = "/api";
 
 const GLOBAL_CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
