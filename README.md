@@ -1,253 +1,219 @@
-# SentinelGrid Enterprise SIEM & SOAR Guide
+# SENTINELGRID (v2.4.0)
+## AI-Driven Cyber Resilience Platform for Critical National Infrastructure
 
-SentinelGrid is an enterprise-grade security monitoring and automated incident response platform (SIEM + SOAR) that baselines authentication models, correlates threat trajectories, maps behaviors to MITRE ATT&CK techniques, and triggers playbooks for mitigation.
+> **Internship Capstone Project**  
+> Developed for **Secure Worldz - AI Security Analyst Internship**  
+> **Tagline:** *Intelligence. Detection. Response. Resilience.*
 
 ---
 
-## 🏗️ System Architecture
+## 1. Project Overview & Architecture
 
-```mermaid
-graph TD
-    A[Log Ingestion Stream] -->|Event Records| B[Security Profiler & Isolation Forest]
-    B -->|Flagged Alerts with Engine Log Context| C[Threat Correlation Engine]
-    C -->|MITRE Campaign Records| D[Orchestration Playbooks]
-    D -->|Audit Database| E[API Gateways]
-    E -->|REST API Services| F[SentinelGrid SOC Dashboard]
+**SentinelGrid** is a complete, interactive, enterprise-grade Security Operations Center (SOC) platform engineered to defend Critical National Infrastructure (CNI) — specifically Power Distribution Grids, 400kV Substation RTUs, SCADA Master HMIs, and associated Enterprise IT identity nodes.
+
+The platform demonstrates the complete autonomous and human-in-the-loop analyst lifecycle:
+1. **Log Aggregation:** Multi-source ingestion across Purdue Model Levels 1 through 4 (Windows Event 4624/4625, Linux auth, Edge Firewalls, Network Flow, OT Modbus/DNP3, and Cloud IAM).
+2. **AI Anomaly Detection:** Real-time geometric outlier detection using an unsupervised **Isolation Forest** ML pipeline (120 decision trees, Scikit-Learn 1.9).
+3. **Explainable AI (XAI):** Decomposes multi-dimensional feature contributions (failed logins, off-hours circadian shifts, egress byte spikes, Purdue asset criticality, geo/ASN novelty) into plain-English diagnostic reasoning with actionable mitigations.
+4. **Attack Campaign Correlation:** Automatically synthesizes discrete alerts into coordinated campaigns (*Operation GridBreaker*, *DarkLocker*, *Substation Override*).
+5. **MITRE ATT&CK Mapping:** Defensively classifies threats into official Enterprise and ICS tactics/techniques (T1110, T1078, T1021, T1098, T1041, T1068, T0855).
+6. **SOAR Response Automation:** Orchestrates 4 automated response playbooks with safety isolation boundaries and human-in-the-loop approval gates.
+7. **Incident Case Management:** Case tracking with assigned analysts, severity controls, audit timeline logs, and notes.
+8. **Statutory CERT-In Compliance Reporting:** Form generator and live PDF/JSON exporter compliant with Section 70B of The Information Technology Act, 2000.
+9. **Tamper-Evident Audit Trail:** Chained SHA-256 cryptographic ledger with one-click full chain mathematical verification.
+10. **Interactive Demo Engine:** Real-time 12-step Multi-Stage APT simulation with controllable speed, play/pause/resume/step controls, and instant database reflection.
+
+```
+                              ┌───────────────────────────────────┐
+                              │     SENTINELGRID REACT WEB UI     │
+                              │ (Vite, Tailwind, Recharts, Icons) │
+                              └─────────────────┬─────────────────┘
+                                                │ REST API / JWT
+                                                ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                          FASTAPI APPLICATION BACKEND                            │
+│                                                                                 │
+│  ┌───────────────────────┐  ┌──────────────────────┐  ┌──────────────────────┐  │
+│  │   Telemetry Ingestion │  │ Isolation Forest ML   │  │  XAI Explainer       │  │
+│  │   (Windows/OT/Network)│  │ (120 Estimator Trees) │  │  (Feature Shapley)   │  │
+│  └───────────┬───────────┘  └──────────┬───────────┘  └──────────┬───────────┘  │
+│              │                         │                         │              │
+│  ┌───────────▼───────────┐  ┌──────────▼───────────┐  ┌──────────▼───────────┐  │
+│  │  Campaign Correlator  │  │ MITRE ATT&CK Matrix  │  │ SOAR Playbook Engine │  │
+│  │  (Attack Graph Clust) │  │ (Enterprise & ICS)   │  │ (Approval Gateways)  │  │
+│  └───────────┬───────────┘  └──────────┬───────────┘  └──────────┬───────────┘  │
+│              │                         │                         │              │
+│  ┌───────────▼───────────┐  ┌──────────▼───────────┐  ┌──────────▼───────────┐  │
+│  │  Incident Case Mgmt   │  │ CERT-In Sec 70B Rprt │  │ Tamper-Evident Audit │  │
+│  │  (Full Lifecycle)     │  │ (PDF & JSON Engine)  │  │ (Chained SHA-256)    │  │
+│  └───────────────────────┘  └──────────────────────┘  └──────────────────────┘  │
+└───────────────────────────────────────┬─────────────────────────────────────────┘
+                                        │ SQLAlchemy ORM
+                                        ▼
+                      ┌───────────────────────────────────┐
+                      │    SQLITE CNI PERSISTENT STORE    │
+                      │   (Seeded Baseline & Telemetry)   │
+                      └───────────────────────────────────┘
 ```
 
 ---
 
-## 🌟 Advanced Platform Capabilities
+## 2. Technology Stack
 
-### 1. Ingest Analysis Engine & Explainable AI (XAI)
-The security profiling layer fits an `IsolationForest` model to baseline profiles. When anomalies are detected, the profiler compiles contextual reasoning details explaining the specific deviations (e.g., *Origin Location: Russia (expected India)*).
-
-### 2. Device Inventory & Dynamic Blast Radius
-Operator isolation playbooks interact directly with the asset register. Quarantining an compromised destination endpoint (e.g., `external_exfil_ip`) dynamically updates the **Device Inventory** host health cards and shuts down affected backup sync routes in real-time.
-
-### 3. Integrated Security Feeds
-Supports active integrations with external telemetry layers:
-- **CrowdStrike Falcon Link** (Endpoint host telemetry)
-- **Cloudflare WAF Ingest** (Border firewall web traffic)
-- **AWS GuardDuty Connector** (Cloud audit logs)
-
-### 4. CERT-In Incident Reports (Form I)
-The compliance generator consolidates incident timelines and remediation logs, exporting print-ready notification sheets in accordance with the Indian Computer Emergency Response Team (CERT-In) guidelines.
+- **Frontend:** React 19, Vite, Tailwind CSS v4, Recharts, Lucide React icons
+- **Backend:** Python 3.11, FastAPI, Uvicorn, Pydantic v2
+- **Machine Learning & Data Science:** Scikit-Learn 1.9 (`IsolationForest`), Pandas, NumPy
+- **Database & Cryptography:** SQLite, SQLAlchemy 2.0, bcrypt, hashlib (SHA-256 chaining), python-jose (JWT)
+- **Compliance & PDF Export:** fpdf2 (Official Section 70B CERT-In formatted reports)
 
 ---
 
-## 📂 Project Directory Structure
-
-```
-E:\cyber-resilience/
-├── backend/
-│   ├── data/                 # Raw logs, alerts, SQLite DB
-│   ├── data_gen/
-│   │   ├── generate_logs.py  # Generates 7-day normal baseline logs
-│   │   └── inject_attack.py  # Injects the 4-stage attack sequence
-│   ├── detection/
-│   │   ├── anomaly_engine.py # IsolationForest to detect alerts + XAI
-│   │   ├── attck_mapper.py   # MITRE ATT&CK mapping
-│   │   └── correlation.py    # Correlates alerts into a multi-stage campaign
-│   ├── response/
-│   │   └── orchestrator.py   # Playbooks, SQLite logs, Auto vs approval gate
-│   ├── api/
-│   │   └── main.py           # FastAPI endpoints
-│   ├── test_api.py           # Automated integration test script
-│   └── requirements.txt      # Python dependencies
-└── frontend/                 # React (Vite) application
-```
-
----
-
-## 🚀 Launching the Platform
-
-### 1. Start the Backend API Server
-Navigate to the backend directory and launch the FastAPI web server using python launcher:
-```bash
-py E:\cyber-resilience\backend\api\main.py
-```
-*API is hosted on: `http://localhost:8000`*
-*Interactive API docs: `http://localhost:8000/docs`*
-
-### 2. Start the Frontend React Dashboard
-Navigate to the frontend directory and start the Vite development server:
-```bash
-cd E:\cyber-resilience\frontend
-npm run dev
-```
-*SOC Dashboard is hosted on: `http://localhost:5173`*
-
-### 5. Frontend Production & Vercel Deployment
-- Run the production compiler: `npm run build` in the `frontend` folder.
-- Deploy the compiled static HTML/JS build on an **NGINX web server** or an **S3 + CloudFront CDN** for high availability.
-
-#### Deploying Frontend on Vercel:
-1. Connect your GitHub repository to your **Vercel Dashboard**.
-2. In the project setup, set the **Root Directory** to `frontend`.
-3. Vercel will automatically detect the Vite config. Leave build commands as default (`npm run build`, output directory `dist`).
-4. Click **Deploy**. The `vercel.json` file inside the `frontend` directory handles single-page routing redirects automatically.
-
----
-
-## 🛡️ Validation & Operational Flow
-
-1. Open `http://localhost:5173` in your web browser.
-2. Click **Run Threat Assessment** on the top right. This clears the historical audits, ingests external log packets, and updates the ML baseline.
-3. Select **Alert Feed** to inspect the identified anomalies along with the **Engine Analysis** reasons.
-4. Click **Correlated Campaigns** to trace the chronological multi-stage attack trajectory.
-5. Open **Playbooks & Orchestrations** to view executed actions, and click **Execute Action** to approve pending containment playbooks.
-6. Open **Device Inventory** to see nodes transitively go offline once you isolate compromised hosts.
-7. Navigate to **Compliance Reporting** to download the CERT-In notification report.
-
-# SentinelGrid — Problem Statement Alignment & Technical Evaluation
-
-This document details how **SentinelGrid** directly fulfills all requirements of **Problem Statement #7: AI-Driven Cyber Resilience for Critical National Infrastructure**.
-
----
-
-## 🎯 Direct Mapping to Problem Statement Requirements
-
-| Problem Statement Requirement | SentinelGrid Implementation & Proof | Status |
-| :--- | :--- | :---: |
-| **1. Behavioral Anomaly Detection (UEBA)** | Unsupervised `IsolationForest` ML model trained on 7-day user/device baselines (geo, time, host, payload, privilege). Zero signature dependency. | ✅ Fully Satisfied |
-| **2. APT Campaign Attribution & MITRE Mapping** | Maps observed attack trajectories to MITRE ATT&CK techniques (`T1078`, `T1021`, `T1098`, `T1041`) and tracks stage progression in real-time. | ✅ Fully Satisfied |
-| **3. Autonomous SOAR & Blast-Radius Human Gates** | Dual-tier SOAR orchestrator: Auto-executes low-impact actions (Force MFA, Restrict read-only) while gating high blast-radius actions (Host Isolation) behind human approval. | ✅ Fully Satisfied |
-| **4. CERT-In Incident Reporting (Form I)** | Auto-compiles official CERT-In Form I notification sheets detailing incident timelines, compromised assets, and remediation steps. | ✅ Fully Satisfied |
-| **5. Full Auditability & MTTR Reduction** | Every execution logged in SQLite audit trail. Mean Time To Containment (MTTR) compressed from weeks to **14 seconds**. | ✅ Fully Satisfied |
-
----
-
-## 🛡️ Attack Progression & MITRE ATT&CK Attribution
-
-SentinelGrid simulates a low-and-slow APT campaign targeting critical infrastructure credentials (`dr_sharma` user profile).
-
-```mermaid
-graph TD
-    S1[Stage 1: Initial Access<br/>T1078 - Valid Accounts<br/>Login from Russia at 2 AM] --> S2[Stage 2: Lateral Movement<br/>T1021 - Remote Services<br/>Access backup_server]
-    S2 --> S3[Stage 3: Privilege Escalation<br/>T1098 - Account Manipulation<br/>Elevate to Admin on Domain Controller]
-    S3 --> S4[Stage 4: Exfiltration<br/>T1041 - Exfil Over C2 Channel<br/>Transfer 4.5 GB to external_exfil_ip]
-```
-
-### Attack Stage Breakdowns & XAI Explanations
-
-1. **Stage 1: Initial Access (`T1078` - Valid Accounts)**
-   - **Event**: Login from Moscow, Russia (`95.213.255.1`) at 2:15 AM.
-   - **XAI Reason**: Ingress connection from Russia deviates from user's normal location baseline (India). Time 2:15 AM deviates from active baseline (9 AM – 6 PM).
-
-2. **Stage 2: Lateral Movement (`T1021` - Remote Services)**
-   - **Event**: Connected to `backup_server` at 2:45 AM.
-   - **XAI Reason**: Session connected to `backup_server`, a host never accessed by this user profile in historical baseline logs.
-
-3. **Stage 3: Privilege Escalation (`T1098` - Account Manipulation)**
-   - **Event**: Elevated account rights to `admin` on `domain_controller` at 3:10 AM.
-   - **XAI Reason**: Standard account privilege modified to `admin` without an active change ticket.
-
-4. **Stage 4: Exfiltration (`T1041` - Exfiltration Over C2 Channel)**
-   - **Event**: Transferred 4,500 MB (4.5 GB) to `external_exfil_ip` at 3:50 AM.
-   - **XAI Reason**: Outbound data payload represents an extreme **300x baseline surge** over user's typical max limit (15 MB).
-
----
-
-## 📊 Evaluation Focus & Performance Metrics
-
-| Evaluation Metric | Baseline / Industry | SentinelGrid Result |
-| :--- | :--- | :--- |
-| **Detection Recall (APT Attack)** | 40% – 60% (Signature-based) | **100% (2/2 APT attack stages flagged)** |
-| **False Positive Rate** | High (5% – 15%) | **0.0% on 9,000+ benchmark events** |
-| **Mean Time to Contain (MTTR)** | Weeks to Months | **14 Seconds** |
-| **Playbook Automation Coverage** | Manual | **100% (Auto-dispatch + Gated Approval)** |
-| **Auditability** | Partial Logs | **100% SQLite Auditability + CERT-In Form I** |
-
-# SentinelGrid — System Architecture & Implementation
-
-This document details the system architecture of the SentinelGrid SOAR & SIEM platform, its data flow, core component details, and environment verification guide.
-
----
-
-## 🏗️ System Architecture
-
-```mermaid
-graph TD
-    subgraph Ingestion Layer
-        A1[Log Generator] -->|7-day baseline logs| B[full_logs.csv]
-        A2[Attack Injector] -->|4-stage attack trajectory| B
-    end
-
-    subgraph Profiling & Detection
-        B -->|Ingest Stream| C[Isolation Forest Engine]
-        C -->|Unsupervised Alerts| D[Threat Correlation Engine]
-        D -->|MITRE Campaign JSON| E[SOAR Response Playbook Orchestrator]
-    end
-
-    subgraph Operations & Audit
-        E -->|Auto & Pending Actions| F[(SQLite Database)]
-        E -->|Form I Compliance Metadata| G[FastAPI REST API Services]
-    end
-
-    subgraph Visual Interface
-        G -->|REST Endpoints| H[SentinelGrid Premium React SOC Dashboard]
-    end
-```
-
----
-
-## 📂 Component Directory Breakdown
-
-* **`backend/data_gen/generate_logs.py`**: Simulates 7 days of normal baseline log behavior for 50 users (expected IP locations, working hour windows, and access patterns).
-* **`backend/data_gen/inject_attack.py`**: Injects a 4-stage MITRE-mapped attack chain targeted at credentials of user `dr_sharma`.
-* **`backend/detection/anomaly_engine.py`**: Trains the `IsolationForest` model on baseline profiles and generates Explainable AI (XAI) storytelling explanations for flagged deviations.
-* **`backend/detection/correlation.py`**: Groups single alerts into multi-stage attack campaigns using username tracking.
-* **`backend/response/orchestrator.py`**: Triggers SOAR mitigation playbooks. Saves execution history into a local SQLite database (`sentinelgrid.db`) and handles manual approval gates.
-* **`backend/api/main.py`**: Exposes FastAPI endpoints for alerts, campaigns, audit logs, containment actions, and CERT-In Form I compliance reports.
-* **`frontend/src/App.jsx`**: Premium visual interface with a dark-cyber aesthetic, animated threat radar, interactive charts, device quarantine registers, and compliance report downloads.
-
----
-
-## 🚀 Environment Verification & Setup
-
-Follow these steps to run the complete environment locally for judging or evaluation.
+## 3. Quick Startup Instructions
 
 ### Prerequisites
-Make sure **Python 3** and **Node.js** are installed.
+- Node.js (v18+) and npm
+- Python (v3.10+)
 
-### 1. Backend Setup & Startup
-Navigate to the `backend` directory, install requirements, and start the FastAPI uvicorn server:
+### Backend Startup
 ```bash
-# Navigate to backend folder
+# From project root
 cd backend
 
-# Install dependencies
-pip install -r requirements.txt
+# Seed/Reset the database (optional, auto-seeds on first run)
+py -m app.database.seed_data
 
-# Start the API server
-py api/main.py
+# Launch the FastAPI server on port 8000
+py -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-*The API server will run at: `http://127.0.0.1:8000`*
+*Backend Swagger API Docs will be live at:* **`http://127.0.0.1:8000/docs`**
 
-### 2. Frontend Setup & Startup
-Navigate to the `frontend` directory, install node modules, and start the Vite dev server:
+### Frontend Startup
 ```bash
-# Navigate to frontend folder
-cd ../frontend
+# In a new terminal, from project root
+cd frontend
 
-# Install dependencies
+# Install dependencies (already present in repository)
 npm install
 
-# Start development server
+# Start Vite dev server on port 5173
 npm run dev
 ```
-*The React Dashboard will open at: [http://localhost:5173](http://localhost:5173)*
+*Frontend application will be live at:* **`http://localhost:5173`**
 
-### 3. Automated Pipeline Verification
-To verify the entire detection, mapping, and orchestration pipeline runs successfully, run the automated integration test script in a separate shell:
-```bash
-# From workspace root
-py backend/test_api.py
-```
-This script will:
-1. Run the simulation (logs -> attack -> detection -> correlation -> SOAR playbooks).
-2. Query the alerts feed.
-3. Validate campaign mapping.
-4. Execute human-in-the-loop playbook approval.
-5. Generate and check the compliance report.
+---
+
+## 4. Demo Login Credentials
+
+The platform includes two pre-configured role profiles. You can either type the credentials on the login screen or click the **1-Click Quick Demo Profile** buttons on the login card:
+
+| Role | Username | Email | Password | Access Scope |
+|---|---|---|---|---|
+| **SOC Analyst** | `analyst_priya` | `analyst@sentinelgrid.cni` | `Analyst@2026` | Triage alerts, inspect XAI, open incidents, execute low-impact playbooks, generate CERT-In reports |
+| **Security Administrator** | `admin_vikram` | `admin@sentinelgrid.cni` | `Admin@2026` | Full administrative control, authorize high-impact quarantine actions, verify audit integrity, tune AI sensitivity |
+
+---
+
+## 5. Feature & Module Checklist
+
+- [x] **Dark Cyber Glassmorphism UI:** Palette strictly compliant with `#080B12` (dark black), `#101827` (dark navy), `#00DADA` (electric cyan), `#238BFF` (neon blue), glowing borders, and live pulse indicators.
+- [x] **Module 1: Overview Dashboard:** Live KPI cards, timeframe filterable area timeline (1h, 24h, 7d, 30d), severity distribution donut chart, MITRE category bar chart, recent alerts, and microservice health telemetry.
+- [x] **Module 2: Security Alerts:** Severity tabs, search input, status filters, XAI deep-dive modal, and "Promote to Incident" action.
+- [x] **Module 3: AI Threat Detection:** Live model status (120 Isolation Forest trees), mathematical distinction callout (Score vs Probability), interactive feature vector slider playground with live inference, and historical anomaly table.
+- [x] **Module 4: Explainable AI (XAI):** Feature attribution breakdown, plain-English diagnostic narrative, actionable mitigation steps, and analytical caveat disclaimers.
+- [x] **Module 5: Attack Campaigns:** Multi-stage attack progression pipeline (Initial Access → Lateral Movement → Privilege Escalation → Exfiltration), risk scoring, and chronological attack timeline.
+- [x] **Module 6: MITRE ATT&CK Matrix:** Interactive tactical coverage matrix, active detection counters, technique mitigation details, and mapped evidence table.
+- [x] **Module 7: Security Logs:** Filter by severity, event type, IP, keyword search; complete raw JSON inspector modal; CSV export; and synthetic event injection engine.
+- [x] **Module 8: Asset & Device Inventory:** Purdue Model topology (Levels 1-4), criticality badges, vulnerability counters, and simulated Host Quarantine / Release actions.
+- [x] **Module 9: SOAR Automation:** 4 pre-built response playbooks, execution history, and interactive Analyst Approval/Rejection workflow for high-impact actions.
+- [x] **Module 10: Incident Management:** Full lifecycle case tracking (New, Investigating, Contained, Resolved, Closed), severity adjustments, chronological timeline logging, and investigation notes thread.
+- [x] **Module 11: CERT-In Compliance Reporting:** Section 70B compliance form generator, executive report preview, one-click official PDF download, and JSON export.
+- [x] **Module 12: Audit Logs:** Chained SHA-256 cryptographic ledger with one-click full chain mathematical verification.
+- [x] **Module 13: Demo Simulation Engine:** Top bar button, 12-step automated APT simulation, controllable speeds (Normal, Presentation, Fast), Play/Pause/Resume/Step/Reset, and 5 individual attack vectors.
+
+---
+
+## 6. Step-by-Step Presentation Demonstration Guide
+
+Follow this proven script during your internship project demonstration to highlight the technical depth and operational value of SentinelGrid:
+
+### Step 1: Login & Orientation (0:00 - 0:30)
+1. Open `http://localhost:5173`.
+2. Point out the enterprise dark theme, CNI SOC branding, and security credentials.
+3. Click **"Priya Sharma (Analyst)"** to 1-click authenticate.
+4. Showcase the top navigation: Real-time clock (IST), live "GRID DEFENSE ACTIVE" heartbeat pulse, notification center, and active analyst pill.
+
+### Step 2: Overview Dashboard (0:30 - 1:00)
+1. Walk through the 6 KPI cards (Total Events, Active Threats, Critical Alerts, Anomalies, Incidents, Assets). Emphasize that all numbers are backed by the live SQLite datastore.
+2. Toggle the timeline filter (`1h`, `24h`, `7d`, `30d`) to show dynamic event distribution.
+3. Point to the Severity Donut and MITRE Category charts showing threats mapped across Purdue boundaries.
+
+### Step 3: Trigger the 12-Stage Multi-Stage APT Simulation (1:00 - 2:00)
+1. Click the glowing cyan **"DEMO SIMULATION"** button in the top bar.
+2. Select **"Presentation"** speed mode and click **"Start APT Simulation"**.
+3. Watch the real-time animated timeline execute step-by-step:
+   - **Step 1:** External credential spray against Domain Controller (Tor Exit IP).
+   - **Step 2:** Lateral pivot via RDP into Engineering Workstation 45.
+   - **Step 3:** Local privilege escalation acquiring `NT AUTHORITY\SYSTEM`.
+   - **Step 4:** 840 MB outbound telemetry egress from Historian DB.
+   - **Step 5-6:** AI engine flags anomaly score `0.96` and generates XAI explanation.
+   - **Step 7-8:** Alerts correlated into *Operation GridBreaker* and mapped to MITRE ATT&CK.
+   - **Step 9-10:** SOAR Playbook 3 staged and auto-approved for containment.
+   - **Step 11-12:** Incident `INC-2026-0041` updated to *Contained* and CERT-In draft generated.
+4. Close the modal to show the dashboard metrics updating in real-time.
+
+### Step 4: Explainable AI & Machine Learning Deep Dive (2:00 - 2:45)
+1. Navigate to **"AI Threat Detection"** on the sidebar.
+2. Review the Isolation Forest model card (120 estimator trees, Scikit-Learn 1.9).
+3. Highlight the statistical callout box explaining why geometric outlier score is distinct from an unverified Bayesian probability.
+4. Scroll to the **"Live Feature Vector Playground"**: move the *Data Transfer* slider to `850 MB` and *Hour* to `3:00 AM`, then click **"Execute ML Inference"**. Show the instant model prediction and XAI breakdown.
+5. In the historical anomalies table, click **"Investigate"** to open the XAI modal, showing feature attribution bars and recommended mitigation steps.
+
+### Step 5: Incident Management, SOAR & CERT-In Reporting (2:45 - 3:30)
+1. Navigate to **"SOAR Automation"** and highlight the safety boundary notice and execution log.
+2. Navigate to **"Incident Management"**: select `INC-2026-0041`, review the chronological timeline, and type an analyst note to show live updates.
+3. Navigate to **"CERT-In Reporting"**: select the generated report `CERT-IN-2026-CNI-0819`.
+4. Click **"Download Official PDF"** to open the generated statutory compliance filing in a new tab.
+5. Click **"Export JSON"** to demonstrate SIEM interoperability.
+
+### Step 6: Tamper-Evident Audit Verification (3:30 - 4:00)
+1. Navigate to **"Audit Logs"**.
+2. Explain the SHA-256 hash chaining mechanism (`hash = SHA256(prev_hash + user + action + timestamp + details)`).
+3. Click the green **"Verify Audit Integrity"** button.
+4. Show the live verification card: *"Cryptographic audit chain fully verified. No tampering detected."*
+
+---
+
+## 7. Known Limitations & Architectural Notes
+
+1. **Simulation Sandbox:** All automated network quarantines, account lockouts, and Modbus command mitigations operate strictly on simulated assets and software objects to protect production infrastructure.
+2. **Local Cryptographic Ledger:** The audit chain implements software-based SHA-256 hash chaining suitable for demonstrative forensic traceability. It is not coupled to hardware TPM chips or immutable blockchain nodes.
+3. **Statutory Notice:** Generated CERT-In compliance filings follow the official Section 70B format but are marked with synthetic demonstration headers.
+
+---
+
+## 8. Vercel & Cloud Deployment Guide
+
+### Deploying the Frontend to Vercel
+
+1. **Import to Vercel:**
+   - Link your GitHub repository `https://github.com/ashish1207kh/SentinelGrid-SOC` in the [Vercel Dashboard](https://vercel.com/new).
+   - If deploying from the root directory: The included `vercel.json` will automatically configure:
+     - **Build Command:** `cd frontend && npm install && npm run build`
+     - **Output Directory:** `frontend/dist`
+   - If setting **Root Directory** to `frontend` in Vercel project settings:
+     - **Framework Preset:** Vite
+     - **Build Command:** `npm run build`
+     - **Output Directory:** `dist`
+
+2. **Environment Variables on Vercel:**
+   - If your FastAPI backend is hosted on a cloud platform (e.g. Render, Railway, AWS, Fly.io), add this Environment Variable in your Vercel Project Settings:
+     ```
+     VITE_API_BASE_URL=https://your-backend-api.onrender.com/api
+     ```
+   - For standalone local preview, leave `VITE_API_BASE_URL` empty to use the local Vite proxy.
+
+### Deploying the Backend to Render / Railway
+
+- **Build Command:** `pip install -r backend/requirements.txt`
+- **Start Command:** `cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+
